@@ -17,8 +17,6 @@ public class Shell {
     private static final String REMOVE = "remove ";
     private static final String ASCII_ART = "asciiArt";
     private static final String NO_CHARS = "Did not execute. Charset is empty.\n";
-    private static final String OUTPUT_HTML = "output html";
-    private static final String OUTPUT_CONSOLE = "output console";
     private static final char SPACE = ' ';
     private static final String ALL = "all";
 
@@ -27,14 +25,9 @@ public class Shell {
     private static final String CHARS = "chars";
     private static final String RES_UP = "res up";
     private static final String RES_DOWN = "res down";
-    private static final int LENGTH_CHAR = 1;
+    
+    private static final String INCORRECT_FORMAT = "Did not execute due to incorrect format.";
 
-    private static final int FIRST_IND = 0;
-    private static final int LAST_IND = -1;
-    private static final String INCORRECT_FORMAT_ADD = "Did not add due to incorrect format.";
-
-    private static final String INCORRECT_FORMAT_REMOVE = "Did not remove due to incorrect format.";
-    private static final String INCORRECT_FORMAT_COMMAND = "Did not execute due to incorrect command.";
     private static final String EXPECTION = "Did not execute due to problem with image file.";
 
     private static final String EXIT_COMMAND = "exit";
@@ -45,6 +38,7 @@ public class Shell {
 
     private static final String OUTPUT_HTML_PATH = "out.html";
     private static final String OUTPUT_HTML_COMMAND = "output html";
+    private static final String COURIERNEW="Courier New";
 
     private static AsciiOutput asciiOutput = new ConsoleAsciiOutput();
 
@@ -74,7 +68,7 @@ public class Shell {
             case RES_UP -> parameters.resUp();
             case RES_DOWN -> parameters.resDown();
             case OUTPUT_CONSOLE -> asciiOutput = new ConsoleAsciiOutput();
-            case OUTPUT_HTML -> asciiOutput = new HtmlAsciiOutput( "html.out ","Courier New");
+            case OUTPUT_HTML -> asciiOutput = new HtmlAsciiOutput(OUTPUT_HTML_PATH,COURIERNEW);
             case ASCII_ART -> runAlgorithm(parameters);
             default -> executeRemainsCommands(newCommand,parameters);
 
@@ -105,58 +99,77 @@ public class Shell {
             System.out.print(INCORRECT_FORMAT_COMMAND);
         }
     }
-
-
-
-    private void executeAddRemove(String newCommand, Parameters parameters,boolean add){
-        if (newCommand.length() == 1){
-            if (add){
-                parameters.getCharMatcher().addChar(newCommand.charAt(0));
-                return;
-            }
-            parameters.getCharMatcher().removeChar(newCommand.charAt(0));
-
+    private void executeAddRemove(String newCommand, Parameters parameters, boolean add) {
+        if (newCommand.length() == 1) {
+            handleSingleChar(newCommand.charAt(0), parameters, add);
         }
-        else if (newCommand.equals(SPACE_WORD)){
-            if (add){
-                parameters.getCharMatcher().addChar(SPACE);
-                return;
-            }
-            parameters.getCharMatcher().removeChar(SPACE);
+        else if (newCommand.equals(SPACE_WORD)) {
+            handleSpaceWord(parameters, add);
         }
-        else if (newCommand.length()==3&&newCommand.charAt(1)=='-'){
-            int minimalLetter = min((int)newCommand.charAt(0),(int)newCommand.charAt(2));
-            int maximalLetter = max((int)newCommand.charAt(0),(int)newCommand.charAt(2));
-            for (int i = minimalLetter; i < maximalLetter+1; i++) {
-                if (add){
-                    parameters.getCharMatcher().addChar((char)i);
-                    continue;
-                }
-                parameters.getCharMatcher().removeChar((char)i);
-            }
-        }
-        else if (newCommand.equals(ALL)){
-            for (int i = 32; i < 127; i++) {
-                if (add){
-                    parameters.getCharMatcher().addChar((char)i);
-                }
-            }
-            if (!add){
-                parameters.setCharMatcher(new SubImgCharMatcher(new char[]{}));
-            }
-        }
+        else if (newCommand.length() == 3 && newCommand.charAt(1) == '-') {
+            handleRange(newCommand, parameters, add);
+        } 
+        else if (newCommand.equals(ALL)) {
+            handleAll(parameters, add);
+        } 
         else {
-            if (add){
-                System.out.print(INCORRECT_FORMAT_ADD);
-                return;
-            }
-            System.out.print(INCORRECT_FORMAT_REMOVE);
+            handleIncorrectFormat(add);
         }
     }
+
+    private void handleSingleChar(char c, Parameters parameters, boolean add) {
+        if (add) {
+            parameters.getCharMatcher().addChar(c);
+            return
+            } 
+        parameters.getCharMatcher().removeChar(c);
+    }
+
+
+    private void handleSpaceWord(Parameters parameters, boolean add) {
+        char spaceChar = SPACE;
+        if (add) {
+            parameters.getCharMatcher().addChar(spaceChar);
+            return;
+        } 
+        parameters.getCharMatcher().removeChar(spaceChar);
+    
+    }
+
+    private void handleRange(String newCommand, Parameters parameters, boolean add) {
+        int minimalLetter = Math.min(newCommand.charAt(0), newCommand.charAt(2));
+        int maximalLetter = Math.max(newCommand.charAt(0), newCommand.charAt(2));
+        for (int i = minimalLetter; i <= maximalLetter; i++) {
+            if (add) {
+                parameters.getCharMatcher().addChar((char) i);
+            } 
+            else {
+            parameters.getCharMatcher().removeChar((char) i);
+            }
+        }
+    }
+
+    private void handleAll(Parameters parameters, boolean add) {
+        if (add) {
+            for (int i = 32; i < 127; i++) {
+                parameters.getCharMatcher().addChar((char) i);
+            }
+            return;
+        } 
+        parameters.setCharMatcher(new SubImgCharMatcher(new char[]{}));
+    }
+
+    private void handleIncorrectFormat(boolean add) {
+        if (add) {
+            System.out.print(INCORRECT_FORMAT);
+            return;
+        } 
+        System.out.print(INCORRECT_FORMAT);
+    }
+
 
     public static void main(String[] args) throws IOException {
         new Shell().run();
     }
-
 
 }
