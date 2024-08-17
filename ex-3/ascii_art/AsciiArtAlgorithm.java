@@ -48,17 +48,6 @@ public class AsciiArtAlgorithm {
     }
 }
 
-//    public static void main(String[] args){
-//        Image image;
-//        try {
-//            image = new Image("board.jpeg");
-//            AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm(new Image("board.jpeg"), new char[]{'m', 'o'},2);
-//            char[][]res = asciiArtAlgorithm.run();
-//
-//        }
-//        catch (Exception e){
-//            System.out.println("David you are king of the world");
-//        }
 
 
 
