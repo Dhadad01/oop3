@@ -113,7 +113,7 @@ public class Shell {
             handleAll(parameters, add);
         } 
         else {
-            handleIncorrectFormat(add);
+            System.out.print(INCORRECT_FORMAT);
         }
     }
 
@@ -159,13 +159,7 @@ public class Shell {
         parameters.setCharMatcher(new SubImgCharMatcher(new char[]{}));
     }
 
-    private void handleIncorrectFormat(boolean add) {
-        if (add) {
-            System.out.print(INCORRECT_FORMAT);
-            return;
-        } 
-        System.out.print(INCORRECT_FORMAT);
-    }
+    
 
 
     public static void main(String[] args) throws IOException {
